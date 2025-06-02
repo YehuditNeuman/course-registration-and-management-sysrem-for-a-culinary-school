@@ -82,7 +82,7 @@ const NavBar = () => {
                   translateY: "-50%"
                 }}
               >
-                Kolinarum
+               Culinarium
               </Typography>
             </Link>
 

@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken'
 
 export const chackToken = (req, res, next) => {
+
+
     let token = req.headers.token
     if (!token)
         return res.status(401).json({ title: "user unauthorized", message: "First login" })

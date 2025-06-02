@@ -9,7 +9,7 @@ dateOpen:{type:Date,default: new Date()},
 url:String,
 price:{type:Number,default:400},
 teachersNames:{type:[String],required:true},
-categories:[String],
+categories:{type:[String],required:true},
 
 })
 export const courseModel= model("course",courseSchema,"courses");

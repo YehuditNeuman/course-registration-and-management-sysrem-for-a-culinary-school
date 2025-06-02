@@ -88,7 +88,7 @@ const CourseDetails = () => {
             
               <Grid item xs={12} md={5}>
 
-                <ShowImage course={course} />
+                <ShowImage url={course.url} />
               </Grid>
 
          

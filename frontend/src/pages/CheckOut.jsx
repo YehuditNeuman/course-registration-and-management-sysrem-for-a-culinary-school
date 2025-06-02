@@ -66,7 +66,7 @@ const CheckOut = () => {
     useEffect(() => {
 
         if (CoursesInCart.length === 0)
-            navigate("/courseList");
+            navigate("/");
     }, [user, CoursesInCart, navigate]);
 
     const handlePaymentMethodChange = (event, newValue) => {
@@ -142,10 +142,10 @@ const CheckOut = () => {
         }
         catch (err) {
             // Error handling
-            setSnackbarMessage(err.message || "Error saving the order");
+            setSnackbarMessage(err.response?.data?.message || "Error saving the order");
             setSnackbarSeverity("error");
             setOpenSnackbar(true);
-            console.error(err);
+            console.error(err.message);
         } finally {
             setIsLoading(false);
         }

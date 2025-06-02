@@ -12,13 +12,13 @@ dotenv.config()
 const app=express()
 app.use(express.json())
 connectToDB()
-app.use(cors())
+app.use(cors({}));
 app.use("/api/course/image",express.static("image"))
 app.use("/api/course",coursRouter)
 app.use("/api/student",studentRouter)
 app.use("/api/reg",regRouter)
 app.use(errorHandle)
 const port=process.env.PORT||3000
-app.listen(port,()=>{
+app.listen(port,"localhost",()=>{
     console.log("app is listening on port "+port)
 })

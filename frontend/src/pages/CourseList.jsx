@@ -101,14 +101,14 @@ const CourseList = () => {
                     </Box>
                </Modal>
 
-               <Typography variant="h4" gutterBottom>
-                    Course List
+               <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
+                    {`Our ${category} Courses`}
                </Typography>
                <Grid container spacing={4}>
                     {arr.map(item => (
                          <Grid item xs={12} sm={6} md={4} key={item._id}>
                               <Card>
-                                   <Link to={`/courseList/courseDetails/${item._id}`}>
+                                   <Link to={`courseDetails/${item._id}`}>
                                         <Course course={item} />
                                    </Link>
                                    <CardContent>

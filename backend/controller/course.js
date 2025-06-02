@@ -1,53 +1,26 @@
-import Joi from "joi"
-
 import { courseModel } from "../model/course.js"
-
-const courseSchema = Joi.object({
-    name: Joi.string().min(3).required().messages({
-        "string.min": "The course name must be at least 3 characters long.",
-        "any.required": "Course name is required."
-    }),
-    description: Joi.string().optional().allow('').messages({
-        "string.base": "Description must be a string.",
-    }),
-    price: Joi.number().min(400).required().messages({
-        "number.min": "The price must be at least 400.",
-        "any.required": "Price is required."
-    }),
-    dateOpen: Joi.date().optional(),
-    teachersNames: Joi.array().items(Joi.string()).min(1).required().messages({
-        "array.min": "At least one teacher is required.",
-        "any.required": "Teachers' names are required."
-    }),
-    categories: Joi.array().items(Joi.string().allow('').min(1)).optional().messages({
-        "array.base": "Categories should be an array of strings.",
-        "string.base": "Each category should be a string.",
-        "string.min": "Category name cannot be empty."
-    }),
-    url: Joi.string().optional().uri().messages({
-        "string.uri": "URL must be a valid URI."
-    })
-});
-
+import { courseSchema } from "../validations/courseValidation.js";
 
 export const getAllCourses = async (req, res) => {
-    let limit = req.query.limit || 20
-    let page = req.query.page || 1
-    let category = req.query.category
+    let limit = req.query.limit || 20;
+    let page = req.query.page || 1;
+    let category = req.query.category;
     let filter = {};
+
+    // אם יש קטגוריה בשאילתה, חפש קורסים שהקטגוריה שלהם נמצאת במערך categories
     if (category) {
-        filter.categories = category;
+        filter.categories = { $in: [category] };
     }
+
     try {
         let data = await courseModel.find(filter).skip((page - 1) * limit).limit(limit);
         res.json(data);
-    }
-    catch (err) {
-        res.status(400).json({ title: "cant get all", message: err.message })
+    } catch (err) {
+        res.status(400).json({ title: "can't get all", message: err.message });
     }
 }
 
-export const getAllCategories = async (res) => {
+export const getAllCategories = async (req,res) => {
     try {
         let categories = await courseModel.distinct("categories");
         res.json(categories);
@@ -142,5 +115,6 @@ export const numPages = async (req, res) => {
         res.status(400).json({ title: "cant get num pages", message: err.message })
     }
 }
+
 
 

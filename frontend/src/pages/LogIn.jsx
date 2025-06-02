@@ -1,16 +1,15 @@
 
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import { TextField, Button, IconButton, InputAdornment, Container, Typography, Box } from "@mui/material";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { Button, Typography, Box } from "@mui/material";
+import { GoogleLogin } from '@react-oauth/google';
 
-
-import BackgroundImage from "../components/BackgroundImage";
+import AuthTextField from "../components/auth/AuthTextField";
 import { userIn } from "../features/UserSlice";
-import { loginUser } from '../api/userService';
+import { loginUser, sendGoogleTokenToServerLogin } from '../api/userService';
+import AuthFormWrapper from "../components/auth/AuthFormWrapper";
 
 const LogIn = () => {
     let { register, handleSubmit, formState: { errors } } = useForm();
@@ -21,50 +20,47 @@ const LogIn = () => {
 
     const save = async (data) => {
         try {
+            console.log("DATA TO SEND:", data);
             let res = await loginUser(data);
             disp(userIn(res.data));
             console.log(res.data);
-            navigate("/courseList");
+            navigate("/")
+
         } catch (err) {
             setError(err.response?.data?.message);
             console.log(err.response?.data?.message);
         }
     };
+    const handleGoogleSuccess=async (credentialResponse) => {
+
+        try {
+            let res = await sendGoogleTokenToServerLogin(credentialResponse)
+            const data = res.data;
+            disp(userIn(data));
+            navigate('/');
+        }
+        catch (err) {
+            setError(err.response?.data?.message);
+            console.log(err.response?.data?.message);
+        }
+
+    }
+    const handleGoogleError=() => {
+        setError("Google login failed");
+    }
+
 
     return (
-        <Box
-            sx={{
-                position: 'relative',
-                height: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-            }}
-        >
-            <BackgroundImage
-                sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    zIndex: -1
-                }}
+       
+        <AuthFormWrapper title="Log In" googleLoginComponent={
+            <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+                scope="email profile"
+              
             />
-            <Container
-                maxWidth="xs"
-                sx={{
-                    backgroundColor: 'rgba(245, 245, 245, 0.9)',
-                    padding: 4,
-                    borderRadius: 2,
-                    boxShadow: 3,
-                    position: 'relative',
-                    zIndex: 1
-                }}
-            >
-                <Typography variant="h4" color="textPrimary" sx={{ marginBottom: 3, textAlign: 'center' }}>
-                    Log In
-                </Typography>
+        }>
+     
                 <form
                     noValidate
                     onSubmit={handleSubmit(save)}
@@ -74,61 +70,33 @@ const LogIn = () => {
                         gap: '20px'
                     }}
                 >
-                    <TextField
-                        label="Username"
-                        variant="outlined"
-                        fullWidth
-                        InputLabelProps={{ style: { color: '#333' } }}
-                        {...register("userName", {
-                            required: { value: true, message: "Username is required" },
-                            minLength: { value: 3, message: "Username must be at least 3 characters" }
-                        })}
-                        error={!!errors.userName}
-                        helperText={errors.userName?.message}
-                        sx={{
-                            backgroundColor: 'white',
-                            borderRadius: 1,
-                            '& .MuiOutlinedInput-root': {
-                                '&.Mui-focused fieldset': {
-                                    borderColor: "#DC143C",
-                                },
-                            },
+                    <AuthTextField
+                        label="Email"
+                        name="email"
+                        register={register}
+                        rules={{
+                            required: "Email is required",
+                            pattern: {
+                                value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+                                message: "Invalid email format"
+                            }
                         }}
+                        error={errors.email}
+                        helperText={errors.email?.message}
                     />
-                    <TextField
+                    <AuthTextField
                         label="Password"
-                        variant="outlined"
-                        type={showPassword ? "text" : "password"}
-                        fullWidth
-                        InputLabelProps={{ style: { color: '#333' } }}
-                        {...register("password", {
-                            required: { value: true, message: "Password is required" },
+                        name="password"
+                        register={register}
+                        rules={{
+                            required: "Password is required",
                             minLength: { value: 8, message: "Password must be at least 8 characters" }
-                        })}
-                        error={!!errors.password}
+                        }}
+                        error={errors.password}
                         helperText={errors.password?.message}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        edge="end"
-                                        sx={{ color: '#333' }}
-                                    >
-                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        }}
-                        sx={{
-                            backgroundColor: 'white',
-                            borderRadius: 1,
-                            '& .MuiOutlinedInput-root': {
-                                '&.Mui-focused fieldset': {
-                                    borderColor: "#DC143C",
-                                },
-                            },
-                        }}
+                        showToggle
+                        show={showPassword}
+                        setShow={setShowPassword}
                     />
                     {error && <Box sx={{ color: 'red', textAlign: 'center', marginTop: 2 }}>{error}</Box>}
                     <Button
@@ -144,9 +112,15 @@ const LogIn = () => {
                     >
                         Log In
                     </Button>
+                    <Typography align="center" sx={{ mt: 2 }}>
+                    Don't have an account? <Link to="/signup">Sign up</Link>
+                    </Typography>
                 </form>
-            </Container>
-        </Box>
+                
+              
+                </AuthFormWrapper>
+              
+       
     );
 };
 

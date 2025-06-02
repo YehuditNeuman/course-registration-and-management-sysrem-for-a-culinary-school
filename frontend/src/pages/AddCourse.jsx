@@ -240,7 +240,9 @@ const AddCourse = () => {
                                 <TextField
                                     fullWidth
                                     label="Categories (comma-separated)"
-                                    {...register("categories")}
+                                    {...register("categories", { required: "Categories are required" })}
+                                    error={!!errors.categories}
+                                    helperText={errors.categories?.message}
                                     sx={{
                                         '& .MuiOutlinedInput-root': {
                                             '& fieldset': {

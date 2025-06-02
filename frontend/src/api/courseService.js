@@ -1,7 +1,7 @@
 import axios from "axios"
 
-let baseUrl = `${process.env.VITE_API_BASE_URL}/api/course`
-
+let baseUrl ="http://localhost:8080/api/course"
+//  `${import.meta.env.VITE_API_BASE_URL}/api/student`
 
 export const numPagesFromServer = (limit = 2) => {
     return axios.get(baseUrl + "/total?limit=" + limit)
@@ -43,9 +43,9 @@ export const updateCourse = (course, token) => {
                 token: token
             }
         })}
-
 export const getImageFromServer = (image) => {
-    return axios.get(`${baseUrl}/image/${image}`, { responseType: "blob" });
+    const encodedImage = encodeURIComponent(image); // קידוד שם התמונה
+    return axios.get(`${baseUrl}/image/${encodedImage}`, { responseType: "blob" });
 }
 
 

@@ -8,7 +8,7 @@ const CourseInCart = ({ course }) => {
   return (
     <Box className="course-in-cart-container">
       <Box className="course-image">
-        <ShowImage course={course} />
+        <ShowImage url={course.url} />
       </Box>
       <Box className="course-details">
         <Typography variant="h6" component="div" className="course-name">

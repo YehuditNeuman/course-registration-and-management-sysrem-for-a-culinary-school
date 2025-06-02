@@ -3,14 +3,14 @@ import React, { useState, useEffect } from "react";
 import { getImageFromServer } from "../api/courseService";
 
 
-const ShowImage = ({ course }) => {
+const ShowImage = ({ url }) => {
 
   const [image, setImage] = useState("");
   useEffect(() => {
-    console.log("course.url:", course.url);
+    console.log("course.url:", url);
     const getImages = async () => {
       try {
-        let res = await getImageFromServer(course.url);
+        let res = await getImageFromServer(url);
         console.log("Image URL:", res.data);
 
         setImage(URL.createObjectURL(res.data));
@@ -20,14 +20,14 @@ const ShowImage = ({ course }) => {
     };
     console.log("Image URL:", image);
     getImages();
-  }, [course.url]);
+  }, [url]);
 
   return (
     <>
       {image && (
         <img
           src={image}
-          alt={`תמונה של ${course.name}`}
+          alt={url}
           style={{
             width: "100%",
             height: "auto",

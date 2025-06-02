@@ -16,7 +16,7 @@ const Course = ({ course }) => {
       </Typography>
 
       <Typography variant="body2" component="div" sx={{ color: "text.secondary" }}>
-        <ShowImage course={course} />
+        <ShowImage url={course.url} />
       </Typography>
 
 
